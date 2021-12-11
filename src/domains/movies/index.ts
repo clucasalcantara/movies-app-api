@@ -33,7 +33,14 @@ const searchMovies = async ({ query }: { query: string }) => {
     };
 };
 
+const getMovieById = async (id: number) => {
+    const data = await MovieClient.getMovieById(id);
+
+    return data;
+};
+
 export default {
     getAllPopularMovies,
     searchMovies,
+    getMovieById,
 } as IMovies;

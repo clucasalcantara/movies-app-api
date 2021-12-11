@@ -22,5 +22,6 @@ export const Schema = buildSchema(`
   type Query {
     getAllPopularMovies: ListResponse
     searchMovies(query: String): ListResponse
+    getMovieById(id: Int): Movie
   }
 `);

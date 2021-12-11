@@ -20,11 +20,19 @@ const Client = ({
             'Content-Type': 'application/json',
         },
     }),
+    getMovieById: (id) => fetch(`${BASE_API_URL}/movie/${id}`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${API_KEY}`,
+            'Content-Type': 'application/json',
+        },
+    }),
 });
 
 interface IMovieClient {
     getPopularMovies: () => TMDBResponse
     searchMovies: (query: ParsedQs) =>TMDBResponse
+    getMovieById: (query: ParsedQs) =>TMDBResponse
 }
 
 export default {
@@ -70,4 +78,15 @@ export default {
             throw new Error(error);
         }
     },
+    getMovieById: async ({ id }) => {
+        try {  
+            const response = await Client.getMovieById(id);
+            
+            const data = await response.json();
+            
+            return data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
 } as IMovieClient;

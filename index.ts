@@ -6,7 +6,7 @@ import { Schema } from './src/graphql';
 import { resolvers } from './src/graphql/resolvers';
 
 const app = express();
-const port = 3000;
+const { PORT } = process.env;
 
 app.use(
   '/graphql',
@@ -17,6 +17,6 @@ app.use(
   }),
 );
 
-app.listen(port, () => {
-  console.log(`MovieDB API running on port ${port}.`);
+app.listen(PORT, () => {
+  console.log(`MovieDB API running on port ${PORT}.`);
 });
