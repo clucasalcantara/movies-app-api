@@ -6,7 +6,7 @@ import { Schema } from './src/graphql';
 import { resolvers } from './src/graphql/resolvers';
 
 const app = express();
-const { PORT } = process.env;
+const { PORT = 3001 } = process.env;
 
 app.use(
   '/graphql',
