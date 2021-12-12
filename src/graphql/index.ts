@@ -6,6 +6,8 @@ export const Schema = buildSchema(`
     title: String
     poster_path: String
     overview: String
+    vote_average: Float
+    release_date: String
   }
 
   type PaginationShape {
