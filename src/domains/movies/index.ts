@@ -1,10 +1,10 @@
 import MovieClient from '../../client';
 
-import type { Response } from './types';
+import type { Response, SearchRequestShape } from './types';
 
 interface IMovies {
     getAllPopularMovies: () => Response;
-    searchMovies: (query: { query: string }) => Response;
+    searchMovies: (searchRequest: SearchRequestShape) => Response;
 }
 
 const getAllPopularMovies = async () => {
@@ -20,8 +20,8 @@ const getAllPopularMovies = async () => {
     };
 };
 
-const searchMovies = async ({ query }: { query: string }) => {
-    const { results, page, total_pages, total_results  } = await MovieClient.searchMovies({ query });
+const searchMovies = async ({ searchTerm, page: requestedPage }: SearchRequestShape) => {
+    const { results, page, total_pages, total_results  } = await MovieClient.searchMovies({ searchTerm, requestedPage });
 
     return {
         results,

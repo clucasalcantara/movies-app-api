@@ -23,7 +23,7 @@ export const Schema = buildSchema(`
   
   type Query {
     getAllPopularMovies: ListResponse
-    searchMovies(query: String): ListResponse
+    searchMovies(searchTerm: String, page: Int): ListResponse
     getMovieById(id: Int): Movie
   }
 `);

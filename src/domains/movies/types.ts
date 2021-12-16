@@ -11,6 +11,11 @@ type PaginationShape = {
     total_results: number;
 }
 
+export type SearchRequestShape = {
+    searchTerm: string;
+    page: number;
+}
+
 export type Response = Promise<{ results: Movie[]; pagination: PaginationShape }>;
 
 export type TMDBResponse = Promise<{ results: Movie[]; } & PaginationShape>;

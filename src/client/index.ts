@@ -1,25 +1,57 @@
 import fetch from 'node-fetch';
 import type { ParsedQs } from 'node-fetch';
+import { redisClient } from '../../redis';
 
 import { BASE_API_URL, API_KEY } from '../constants';
 
 import type { TMDBResponse } from '../domains/movies/types';
 
+redisClient.connect();
+
 const Client = ({
-    getPopular: () => fetch(`${BASE_API_URL}/movie/popular`, {
-        method: 'GET',
-        headers: {
-            Authorization: `Bearer ${API_KEY}`,
-            'Content-Type': 'application/json',
-        }
-    }),
-    search: (query) => fetch(`${BASE_API_URL}/search/movie?query=${query}`, {
-        method: 'GET',
-        headers: {
-            Authorization: `Bearer ${API_KEY}`,
-            'Content-Type': 'application/json',
-        },
-    }),
+    getPopular: async () => {
+        const requestedUrl = `${BASE_API_URL}/movie/popular`;
+
+        const redisData = await redisClient.get(requestedUrl);
+
+        if (redisData) return JSON.parse(redisData);
+
+        const response = await fetch(requestedUrl, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${API_KEY}`,
+                'Content-Type': 'application/json',
+            }
+        })
+        
+        const result = await response.json();
+        
+        redisClient.set(requestedUrl, JSON.stringify(result));
+
+        return result;
+    },
+    search: async ({ searchTerm, requestedPage}) => {
+        const requestedUrl = `${BASE_API_URL}/search/movie?query=${searchTerm}&page=${requestedPage}`;
+
+        const redisData = await redisClient.get(requestedUrl);
+
+        if (redisData) return JSON.parse(redisData);
+
+        const response = await fetch(requestedUrl, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${API_KEY}`,
+                'Content-Type': 'application/json',
+            },
+        })
+        
+        const result = await response.json();
+        
+        redisClient.set(requestedUrl, JSON.stringify(result));
+
+        return result;
+
+    },
     getMovieById: (id) => fetch(`${BASE_API_URL}/movie/${id}`, {
         method: 'GET',
         headers: {
@@ -38,15 +70,13 @@ interface IMovieClient {
 export default {
     getPopularMovies: async () => {
         try {
-            const response = await Client.getPopular();
-            
             const {
                 results,
                 total_pages,
                 total_results,
                 page,
-            } = await response.json();
-            
+            } = await Client.getPopular();
+
             return {
                 results,
                 total_pages,
@@ -57,16 +87,15 @@ export default {
             throw new Error(error);
         }
     },
-    searchMovies: async ({ query }) => {
+    searchMovies: async ({ searchTerm, requestedPage }) => {
         try {
-            const response = await Client.search(query);
-            
-            const {
+            const  {
                 results,
                 total_pages,
                 total_results,
                 page,
-            } = await response.json();
+            } = await Client.search({ searchTerm, requestedPage });
+             
             
             return {
                 results,
